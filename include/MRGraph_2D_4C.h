@@ -604,7 +604,8 @@ augment_t(index_t t, const ncap_t rcmin) {
         parent_edge[t] = DIR_NONE;
     }
 }
-/*
+
+//these adopt and relabel functions are incorrect and will most likely be removed soon
 template <typename tcap_t,typename ncap_t,typename flow_t>
 bool MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
 adopt_s(const index_t os) {
@@ -758,7 +759,7 @@ relabel_t(const index_t ot, const index_t max_dist) {
         print_grid("Orphan (O) failed to be relabeled, children are orphaned", "o", ot,char(176));
     }
 #endif
-}*/
+}
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
