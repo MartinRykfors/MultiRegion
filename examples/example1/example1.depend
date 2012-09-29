@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1348667371 source:c:\code\multiregion\src\mrgraph_2d_4c.cpp
+	"..\include\MRGraph_2D_4C.h"
+	<iostream>
+	<algorithm>
+
+1348742845 c:\code\multiregion\include\mrgraph_2d_4c.h
+	<stdint.h>
+	<iostream>
+	<algorithm>
+
+1348668413 source:c:\code\multiregion\examples\example1\main.cpp
+	<iostream>
+	<stdint.h>
+	"..\..\include\MRGraph_2D_4C.h"
+
