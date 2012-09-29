@@ -2,11 +2,8 @@ MultiRegion - A cache efficient solver for max-flow/min-cut problems on grid gra
 
 Currently it only supports 4-connected 2D-grids but it will be developed to support a variety of neighborhoods.
 
-The goal is to make it run on grids that are complete along the last dimension, allowing quick multi region 
-segmentations using a single graph cut. The technique is described in the article "Globally Optimal Segmentation
-of Multi Region Objects" by A.Delong and Y.Boykov, http://www.psi.toronto.edu/~andrew/ .
+The goal is to make it run on grids that are complete along the last dimension, allowing quick multi region segmentations using a single graph cut. The technique is described in the article "Globally Optimal Segmentationof Multi Region Objects" by A.Delong and Y.Boykov, http://www.psi.toronto.edu/~andrew/ .
 
 Right now there are some small examples using the MRGraph class to find minimum cuts on 2D grids.
 
-Example 3 requires the GridCut headers that can be downloaded from gridcut.com . The free license disallows
-redistribution, so these are not included in this repository.
+Example 3 requires the GridCut headers that can be downloaded from www.gridcut.com .
