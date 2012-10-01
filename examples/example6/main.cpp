@@ -12,11 +12,11 @@
             |  | \
             o  2  \
            /|  |   |
-          / 2 /    0
+          / 2 /    1
          |  |/     |
          1  o     /
          |  |    /
-          \ 0   /
+          \ 1   /
            \|  /
             o--
             |
@@ -33,7 +33,7 @@ int main()
     typedef MRGraph_2D_4C<uint16_t, uint16_t, uint16_t> Grid;
     Grid grid(1,1,4);
 
-    grid.set_interior_cap(grid.node_id(0,0,0), 1, 0);
+    grid.set_interior_cap(grid.node_id(0,0,0), 1, 1);
     grid.set_interior_cap(grid.node_id(0,0,0), 2, 2);
     grid.set_interior_cap(grid.node_id(0,0,0), 3, 0);
 
@@ -43,9 +43,9 @@ int main()
 
     grid.set_interior_cap(grid.node_id(0,0,2),-2, 2);
     grid.set_interior_cap(grid.node_id(0,0,2),-1, 2);
-    grid.set_interior_cap(grid.node_id(0,0,2), 1, 0);
+    grid.set_interior_cap(grid.node_id(0,0,2), 1, 1);
 
-    grid.set_interior_cap(grid.node_id(0,0,3),-3, 0);
+    grid.set_interior_cap(grid.node_id(0,0,3),-3, 1);
     grid.set_interior_cap(grid.node_id(0,0,3),-2, 1);
     grid.set_interior_cap(grid.node_id(0,0,3),-1, 0);
 

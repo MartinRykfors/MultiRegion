@@ -215,7 +215,7 @@ private:
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-MRGraph_2D_4C(int w, int h, int depth):
+MRGraph_2D_4C(const int w, const int h, const int depth):
     ow(w),
     oh(h),
     W(((w+1)/8+1)*8),
@@ -237,12 +237,12 @@ MRGraph_2D_4C(int w, int h, int depth):
     rc_nbhd = new ncap_t*[N];   // en pekare per nod. i gridcut har de indexen
     // tvärt om -> en pekare per riktning.
     dist = new index_t[N];
-    for(int i = 0; i < N; ++i) {
+    for(unsigned int i = 0; i < N; ++i) {
         rc_nbhd[i] = new ncap_t[DEGREE];
     }
     rc_st = new tcap_t[N];
 
-    for(int i = 0; i < N; ++i) {
+    for(unsigned int i = 0; i < N; ++i) {
         label[i] = LABEL_F;
         parent_id[i] = PARENT_ID_NONE;
         parent_edge[i] = DIR_NONE;
@@ -281,32 +281,13 @@ MRGraph_2D_4C(int w, int h, int depth):
 }
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
-flow_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-get_flow() const {
-    return maxflow;
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-inline uint8_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-get_segment(int x, int y) const {
-    uint8_t result = 0;
-    for (int i = 0; i < D; ++i){
-        if(label[node_id(x,y,i)] == LABEL_T) {
-            result += (1<<i);
-        }
-    }
-    return result;
-    //return uint8_t(label[node_id(x,y,0)]);
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
 MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
 ~MRGraph_2D_4C() {
     delete[] label;
     delete[] parent_id;
     delete[] parent_edge;
     delete[] rc_st;
-    for(int i = 0; i < N; ++i) {
+    for(unsigned int i = 0; i < N; ++i) {
         delete[] rc_nbhd[i];
     }
     delete[] rc_nbhd;
@@ -319,8 +300,28 @@ MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
 }
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
+flow_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
+get_flow() const {
+    return maxflow;
+}
+
+template <typename tcap_t,typename ncap_t,typename flow_t>
+inline uint8_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
+get_segment(const int x, const int y) const {
+    uint8_t result = 0;
+    for (unsigned int i = 0; i < D; ++i){
+        if(label[node_id(x,y,i)] == LABEL_T) {
+            result += (1<<i);
+        }
+    }
+    return result;
+}
+
+template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-set_terminal_cap(index_t v, tcap_t cap_s, tcap_t cap_t) {
+set_terminal_cap(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
+                                                              const tcap_t  cap_s,
+                                                              const tcap_t  cap_t) {
     if (cap_s > 0 && cap_t > 0) {
         if (cap_s > cap_t) {
             rc_st[v] = cap_s - cap_t;
@@ -371,7 +372,10 @@ set_terminal_cap(index_t v, tcap_t cap_s, tcap_t cap_t) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-set_neighbor_cap(MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v, int offset_x, int offset_y, ncap_t cap) {
+set_neighbor_cap(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
+                                                              const int     offset_x,
+                                                              const int     offset_y,
+                                                              const ncap_t  cap) {
     dir_t dir;
     if      (offset_x ==  1 && offset_y ==  0)
         dir = 1;
@@ -389,7 +393,9 @@ set_neighbor_cap(MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v, int offset_x, i
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-set_interior_cap(index_t v, int offset_z, ncap_t cap) {
+set_interior_cap(const MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
+                                                     const int     offset_z,
+                                                     const ncap_t  cap) {
     uint8_t node_z = get_z(v);
     int target_z = node_z + offset_z;
     if (target_z < 0 || target_z >= D) {
@@ -519,7 +525,9 @@ compute_maxflow() {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-augment(index_t s, index_t t, dir_t st) {
+augment(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t s,
+        typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t t,
+                                                      dir_t   st) {
 
     ncap_t rcmin = rc_nbhd[s][st];
     rcmin = min_residual_s(s,rcmin);
@@ -535,7 +543,8 @@ augment(index_t s, index_t t, dir_t st) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 ncap_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-min_residual_s(index_t s, ncap_t rcmin) {
+min_residual_s(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t s,
+                                                             ncap_t  rcmin) {
     while (parent_edge[s] != DIR_TERMINAL) {
         rcmin = (rcmin < rc_nbhd[parent_id[s]][parent_edge[s]] ?
                  rcmin : rc_nbhd[parent_id[s]][parent_edge[s]]);
@@ -546,7 +555,8 @@ min_residual_s(index_t s, ncap_t rcmin) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 ncap_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-min_residual_t(index_t t, ncap_t rcmin) {
+min_residual_t(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t t,
+                                                             ncap_t  rcmin) {
     while (parent_edge[t] != DIR_TERMINAL) {
         rcmin = (rcmin < rc_nbhd[t][parent_edge[t]] ?
                  rcmin : rc_nbhd[t][parent_edge[t]]);
@@ -557,7 +567,8 @@ min_residual_t(index_t t, ncap_t rcmin) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-augment_s(index_t s, const ncap_t rcmin) {
+augment_s(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t s,
+                                                  const ncap_t  rcmin) {
 
     //traverse the tree to source and alter the residual caps along the way
     while (parent_edge[s] != DIR_TERMINAL) {
@@ -584,7 +595,8 @@ augment_s(index_t s, const ncap_t rcmin) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-augment_t(index_t t, const ncap_t rcmin) {
+augment_t(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t t,
+                                                  const ncap_t  rcmin) {
     while (parent_edge[t] != DIR_TERMINAL) {
         rc_nbhd[t][parent_edge[t]] -= rcmin;
         rc_nbhd[parent_id[t]][REVERSE[parent_edge[t]]] += rcmin;
@@ -607,7 +619,8 @@ augment_t(index_t t, const ncap_t rcmin) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-rank_relabel_s(const index_t os, const index_t max_dist) {
+rank_relabel_s(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t os,
+               const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t max_dist) {
     index_t neighbors [DEGREE];
     get_neighbors(os,neighbors);
 
@@ -674,7 +687,8 @@ rank_relabel_s(const index_t os, const index_t max_dist) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-rank_relabel_t(const index_t ot, const index_t max_dist) {
+rank_relabel_t(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t ot,
+               const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t max_dist) {
     index_t neighbors [DEGREE];
     get_neighbors(ot,neighbors);
 
@@ -739,7 +753,7 @@ rank_relabel_t(const index_t ot, const index_t max_dist) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::dir_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-get_origin(index_t v) {
+get_origin(MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v) {
     while (parent_edge[v] != DIR_NONE && parent_edge[v] != DIR_TERMINAL) {
         v = parent_id[v];
     }
@@ -748,7 +762,9 @@ get_origin(index_t v) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 bool MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-grow_s(index_t& vs, index_t& vt, dir_t& st) {
+grow_s(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t& vs,
+       typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t& vt,
+       typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::dir_t&   st) {
     while(!active_s.is_empty()) {
         index_t a = active_s.pop();
 #ifdef MRGRAPH_VERBOSE
@@ -795,7 +811,9 @@ grow_s(index_t& vs, index_t& vt, dir_t& st) {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 bool MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-grow_t(index_t& vs, index_t& vt, dir_t& st) {
+grow_t(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t& vs,
+       typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t& vt,
+       typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::dir_t&   st) {
     while(!active_t.is_empty()) {
         index_t a = active_t.pop();
 #ifdef MRGRAPH_VERBOSE
@@ -836,7 +854,9 @@ grow_t(index_t& vs, index_t& vt, dir_t& st) {
 }
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::get_neighbors(index_t a, index_t nbhrs[]) {
+void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
+get_neighbors(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t a,
+                    typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t nbhrs[]) {
     nbhrs[0] = north(a);
     nbhrs[1] = east(a);
     nbhrs[2] = south(a);
@@ -864,7 +884,8 @@ print() {
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-print_grid(std::string msg, std::string options = "", index_t special_id = 0, char special_icon = char(32)) {
+print_grid(std::string msg, std::string options = "",
+           typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t special_id = 0, char special_icon = char(32)) {
     #ifdef MRGRAPH_VERBOSE
     ++step;
     if (step < MRGRAPH_VERBOSE_START) {return;}
