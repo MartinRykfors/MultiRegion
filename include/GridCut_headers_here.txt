@@ -1,0 +1,2 @@
+Put the GridCut .h files here. They can be downloaded for free from gridcut.com.
+The GridCut license disallows redistribution.

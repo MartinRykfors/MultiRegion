@@ -12,9 +12,9 @@ The GridCut source code can be obtained at gridcut.com
 #include "..\..\include\GridGraph_2D_4C.h"
 
 
-#define WIDTH 60
-#define HEIGHT 30
-#define MAXCAP 17
+#define WIDTH 70
+#define HEIGHT 50
+#define MAXCAP 6
 
 
 using namespace std;
@@ -94,7 +94,7 @@ int main()
     mgrid.compute_maxflow();
     for(int y=0; y<HEIGHT; y++) {
         for(int x=0; x<WIDTH; x++) {
-            std::cout << char(mgrid.get_segment(x,y)+176); //((mgrid.get_segment(x,y) == 0) ? char(176) : char(178));
+            std::cout << char(mgrid.get_segment(x,y)+177); //((mgrid.get_segment(x,y) == 0) ? char(176) : char(178));
         }
         std::cout << std::endl;
     }

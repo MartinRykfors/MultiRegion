@@ -4,10 +4,11 @@
 	<iostream>
 	<algorithm>
 
-1348742845 c:\code\multiregion\include\mrgraph_2d_4c.h
+1349090815 c:\code\multiregion\include\mrgraph_2d_4c.h
 	<stdint.h>
 	<iostream>
 	<algorithm>
+	<string>
 
 1348668413 source:c:\code\multiregion\examples\example1\main.cpp
 	<iostream>

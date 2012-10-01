@@ -20,7 +20,7 @@ typename flow_t  // Type used to represent the total flow.
 class MRGraph_2D_4C {
 public:
     //for indexing nodes
-    typedef uint16_t index_t;
+    typedef uint32_t index_t;
 
     //for enumerating outgoing edges
     typedef uint8_t dir_t;
@@ -45,15 +45,15 @@ public:
     // Sets the capacities of the source-->node and node-->sink edges.
     // This function can be called only once per node.
     // Capacities less than 0 are treated as 0
-    inline void set_terminal_cap(uint16_t node_id, tcap_t cap_source, tcap_t cap_sink);
+    inline void set_terminal_cap(index_t node_id, tcap_t cap_source, tcap_t cap_sink);
 
     // Sets the capacity of the edge between node and its neighbor at [offset_x,offset_y].
     // For example, to set the capacity of the edge from node [x,y] to node [x+1,y], call:
     // graph->set_neighbor_cap(graph->node_id(x,y),+1,0,edge_capacity);
-    inline void set_neighbor_cap(uint16_t node_id, int offset_x, int offset_y, ncap_t cap);
+    inline void set_neighbor_cap(index_t node_id, int offset_x, int offset_y, ncap_t cap);
 
     // Sets the capacity of the edge between node and one other node in the pixel clique
-    inline void set_interior_cap(uint16_t node_id, int offset_z, ncap_t cap);
+    inline void set_interior_cap(index_t node_id, int offset_z, ncap_t cap);
 
     // Alternative way to set the edge capacities is to use the set_caps function which
     // sets capacities of all edges at once based on values from input arrays.
@@ -84,14 +84,9 @@ public:
     // Number crunch
     void compute_maxflow();
 
+    // Print info about the graph
     void print();
-    void print_id(int x, int y, int z);
-    void print_north(int x, int y, int z);
-    void print_east(int x, int y, int z);
-    void print_south(int x, int y, int z);
-    void print_west(int x, int y, int z);
-    void print_down(int x, int y, int z, int n);
-    void print_reverse();
+
     int get_x(index_t v) {
         return ((v/(64*D))%(W/8))*8 + (v%8);
     };
@@ -209,11 +204,6 @@ private:
     ncap_t min_residual_t(index_t t, ncap_t rcmin);
     void augment_s(index_t s, const ncap_t rcmin);
     void augment_t(index_t t, const ncap_t rcmin);
-    //void adopt();
-    bool adopt_s(const index_t os);
-    bool adopt_t(const index_t ot);
-    void relabel_s(const index_t os, const index_t max_dist);
-    void relabel_t(const index_t ot, const index_t max_dist);
     void rank_relabel_s(const index_t os, const index_t max_dist);
     void rank_relabel_t(const index_t ot, const index_t max_dist);
     dir_t get_origin(index_t v);
@@ -299,15 +289,14 @@ get_flow() const {
 template <typename tcap_t,typename ncap_t,typename flow_t>
 inline uint8_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
 get_segment(int x, int y) const {
-    /*uint8_t result = 0;
+    uint8_t result = 0;
     for (int i = 0; i < D; ++i){
-        if(label[node_id(x,y,i)] == LABEL_S) {
-            continue;
+        if(label[node_id(x,y,i)] == LABEL_T) {
+            result += (1<<i);
         }
-        result += (1<<i);
     }
-    return result;*/
-    return uint8_t(label[node_id(x,y,0)]);
+    return result;
+    //return uint8_t(label[node_id(x,y,0)]);
 }
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
@@ -396,6 +385,17 @@ set_neighbor_cap(MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v, int offset_x, i
     }
     rc_nbhd[v][dir] = cap;
 
+}
+
+template <typename tcap_t,typename ncap_t,typename flow_t>
+void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
+set_interior_cap(index_t v, int offset_z, ncap_t cap) {
+    uint8_t node_z = get_z(v);
+    int target_z = node_z + offset_z;
+    if (target_z < 0 || target_z >= D) {
+        std::cout << "z out of range" << std::endl;
+    }
+    rc_nbhd[v][((offset_z + D) % D) + 3] = cap;
 }
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
@@ -603,162 +603,6 @@ augment_t(index_t t, const ncap_t rcmin) {
         parent_id[t] = PARENT_ID_NONE;
         parent_edge[t] = DIR_NONE;
     }
-}
-
-//these adopt and relabel functions are incorrect and will most likely be removed soon
-template <typename tcap_t,typename ncap_t,typename flow_t>
-bool MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-adopt_s(const index_t os) {
-    index_t neighbors[DEGREE];
-#ifdef MRGRAPH_VERBOSE
-    print_grid("Attempting adoption of orphan (O)", "o", os,'O');
-#endif
-    get_neighbors(os,neighbors);
-    for(dir_t dir = 0; dir<DEGREE; ++dir) {
-        if(rc_nbhd[neighbors[dir]][REVERSE[dir]] &&
-                label[neighbors[dir]] == LABEL_S &&
-                dist[neighbors[dir]] == dist[os] - 1
-                ){//get_origin(neighbors[dir]) == DIR_TERMINAL) {
-            parent_id[os] = neighbors[dir];
-            parent_edge[os] = REVERSE[dir];
-            return true;
-        }
-    }
-    return false;
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-bool MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-adopt_t(const index_t ot) {
-    index_t neighbors[DEGREE];
-#ifdef MRGRAPH_VERBOSE
-    print_grid("Attempting adoption of orphan (O)", "o", ot,'O');
-#endif
-    get_neighbors(ot,neighbors);
-    for(dir_t dir = 0; dir<DEGREE; ++dir) {
-        if(rc_nbhd[ot][dir] &&
-            label[neighbors[dir]] == LABEL_T &&
-            dist[neighbors[dir]] == dist[ot] - 1
-            ){//get_origin(neighbors[dir]) == DIR_TERMINAL) {
-            parent_id[ot] = neighbors[dir];
-            parent_edge[ot] = dir;
-            return true;
-        }
-    }
-    return false;
-}
-
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-relabel_s(const index_t os, const index_t max_dist) {
-    //max_dist is the max distance to which a node may get relabeled, inclusive.
-    index_t neighbors[DEGREE];
-    get_neighbors(os,neighbors);
-    index_t min_dist=max_dist; //achtung
-    index_t min_id;
-    dir_t min_dir;
-    bool new_parent_found = false;
-    for (dir_t dir = 0; dir < DEGREE; ++dir) {
-        if (rc_nbhd[neighbors[dir]][REVERSE[dir]] &&
-                dist[neighbors[dir]] < max_dist &&
-                label[neighbors[dir]] == LABEL_S) {
-            if (dist[neighbors[dir]] < min_dist &&
-                    get_origin(neighbors[dir]) == DIR_TERMINAL) {
-                min_dist = dist[neighbors[dir]];
-                min_id = neighbors[dir];
-                min_dir = dir;
-                new_parent_found = true;
-            }
-        }
-    }
-    if (new_parent_found) {
-        parent_id[os] = min_id;
-        parent_edge[os] = REVERSE[min_dir];
-        #ifdef MRGRAPH_VERBOSE
-        if (dist[os] > min_dist + 1) {
-            std::cout << "Distance decreased on node " << os << " , step " << step << std::endl;
-        }
-        #endif
-        dist[os] = min_dist + 1;
-        if (min_dist + 1 == s_dist) {
-            active_s.push(os);
-        } else if (min_dist == s_dist) {
-            found_s.push(os);
-        }
-    } else {
-        label[os] = LABEL_F;
-        parent_edge[os] = DIR_NONE;
-        parent_id[os] = PARENT_ID_NONE;
-    }
-    for (dir_t dir = 0; dir < DEGREE; ++dir) {
-        if (parent_id[neighbors[dir]] == os) {
-            orphans_s.push(neighbors[dir]);
-            parent_edge[neighbors[dir]] = DIR_NONE;
-            parent_id[neighbors[dir]] = PARENT_ID_NONE;
-        }
-    }
-#ifdef MRGRAPH_VERBOSE
-    if (new_parent_found) {
-        print_grid("Orphan (O) relabeled, children are orphaned", "o", os,'O');
-    } else {
-        print_grid("Orphan (O) failed to be relabeled, children are orphaned", "o", os,char(176));
-    }
-#endif
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-relabel_t(const index_t ot, const index_t max_dist) {
-    //max_dist is the max distance to which a node may get relabeled, inclusive.
-    index_t neighbors[DEGREE];
-    get_neighbors(ot,neighbors);
-    index_t min_dist=max_dist;
-    index_t min_id;
-    dir_t min_dir;
-    bool new_parent_found = false;
-    for (dir_t dir = 0; dir < DEGREE; ++dir) {
-        if (rc_nbhd[ot][dir] &&
-            dist[neighbors[dir]] < max_dist&&
-            label[neighbors[dir]] == LABEL_T) {
-            if (dist[neighbors[dir]] < min_dist &&
-                    get_origin(neighbors[dir]) == DIR_TERMINAL) {
-                min_dist = dist[neighbors[dir]];
-                min_id = neighbors[dir];
-                min_dir = dir;
-                new_parent_found = true;
-            }
-        }
-    }
-    if (new_parent_found) {
-        parent_id[ot] = min_id;
-        parent_edge[ot] = min_dir;
-        dist[ot] = min_dist + 1;
-        if (min_dist + 1 == t_dist) {
-            active_t.push(ot);
-        } else if (min_dist == t_dist) {
-            found_t.push(ot);
-        }
-    } else {
-        label[ot] = LABEL_F;
-        parent_edge[ot] = DIR_NONE;
-        parent_id[ot] = DIR_TERMINAL; //redan gjort i augment
-    }
-    for (dir_t dir = 0; dir < DEGREE; ++dir) {
-        if (parent_id[neighbors[dir]] == ot) {
-            orphans_t.push(neighbors[dir]);
-            parent_edge[neighbors[dir]] = DIR_NONE;
-            parent_id[neighbors[dir]] = PARENT_ID_NONE;
-        }
-    }
-
-#ifdef MRGRAPH_VERBOSE
-    if (new_parent_found) {
-        print_grid("Orphan (O) relabeled, children are orphaned", "o", ot,'O');
-    } else {
-        print_grid("Orphan (O) failed to be relabeled, children are orphaned", "o", ot,char(176));
-    }
-#endif
 }
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
@@ -1253,74 +1097,6 @@ get_icon(uint8_t conn) {
     }
 
     return '!';
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-print_id(int x, int y, int z) {
-    std::cout << x << "," << y << "," << z << " -> " << nodeId(x,y,z)
-              << " ->\t"
-              << get_x(nodeId(x,y,z)) << ","
-              << get_y(nodeId(x,y,z)) << ","
-              << get_z(nodeId(x,y,z)) << std::endl;
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-print_north(int x, int y, int z) {
-    index_t dest = north(nodeId(x,y,z));
-    std::cout << x << "," << y << "," << z << " ->north-> "
-              << get_x(dest) << ","
-              << get_y(dest) << ","
-              << get_z(dest) << std::endl;
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-print_east(int x, int y, int z) {
-    index_t dest = east(nodeId(x,y,z));
-    std::cout << x << "," << y << "," << z << " ->east-> "
-              << get_x(dest) << ","
-              << get_y(dest) << ","
-              << get_z(dest) << std::endl;
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-print_south(int x, int y, int z) {
-    index_t dest = south(nodeId(x,y,z));
-    std::cout << x << "," << y << "," << z << " ->south-> "
-              << get_x(dest) << ","
-              << get_y(dest) << ","
-              << get_z(dest) << std::endl;
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-print_west(int x, int y, int z) {
-    index_t dest = west(nodeId(x,y,z));
-    std::cout << x << "," << y << "," << z << " ->west-> "
-              << get_x(dest) << ","
-              << get_y(dest) << ","
-              << get_z(dest) << std::endl;
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-print_down(int x, int y, int z, int n) {
-    index_t dest = down(nodeId(x,y,z),n);
-    std::cout << x << "," << y << "," << z << " ->down " << n << "-> "
-              << get_x(dest) << ","
-              << get_y(dest) << ","
-              << get_z(dest) << std::endl;
-}
-
-template <typename tcap_t,typename ncap_t,typename flow_t>
-void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-print_reverse() {
-    for (int i = 0; i < DEGREE; ++i) {
-        std::cout << REVERSE[i] << std::endl;
-    }
 }
 
 #endif // MRGRAPH_2D_4C_H

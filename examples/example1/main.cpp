@@ -1,8 +1,6 @@
-
-#include <iostream>
-#include <stdint.h>
-#include "..\..\include\MRGraph_2D_4C.h"
 /*
+##### Example 1 #####
+
                     (S) <- source
                      |
                     <8>
@@ -22,6 +20,10 @@
                             sink -> (T)
 
 */
+#include <iostream>
+#include <stdint.h>
+#include "..\..\include\MRGraph_2D_4C.h"
+
 int main() {
     typedef MRGraph_2D_4C<uint16_t, uint16_t, uint16_t> Grid;
 

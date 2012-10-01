@@ -21,7 +21,7 @@ Legend:
 
 #include "..\..\include\MRGraph_2D_4C.h"
 
-#define WIDTH 9
+#define WIDTH 7
 #define HEIGHT 5
 #define MAXCAP 15
 
@@ -67,8 +67,8 @@ int main()
 
 
     for (int y = 0; y < HEIGHT; ++y) {
-        mgrid.set_terminal_cap(mgrid.node_id(0,y,0), 400, 0);
-        mgrid.set_terminal_cap(mgrid.node_id(WIDTH-1,y,0), 0, 400);
+        mgrid.set_terminal_cap(mgrid.node_id(0,y,0), 40, 0);
+        mgrid.set_terminal_cap(mgrid.node_id(WIDTH-1,y,0), 0, 40);
     }
 
 

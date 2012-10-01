@@ -1,9 +1,7 @@
-//#########  Example 2
-
-#include <iostream>
-#include "..\..\include\MRGraph_2D_4C.h"
-
 /*
+##### Example 2 #####
+Run on a grid spanning more than one 8x8 block of nodes
+
     s
     |
    <2>
@@ -14,6 +12,11 @@
                                                           |
                                                           t
 */
+
+#include <iostream>
+#include "..\..\include\MRGraph_2D_4C.h"
+
+
 int main()
 {
     typedef MRGraph_2D_4C<uint16_t, uint16_t, uint16_t> Grid;
