@@ -1,6 +1,6 @@
 /*
  ##### Example 6 #####
- Run MRGraph on a 2-layered 2x2 grid
+ Run MRGraph on a 1x1 4-layered grid
 
             s
             |
