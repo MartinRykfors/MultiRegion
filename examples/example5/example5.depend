@@ -4,9 +4,10 @@
 	<cstdlib>
 	"..\..\include\MRGraph_2D_4C.h"
 
-1349112411 c:\code\multiregion\include\mrgraph_2d_4c.h
+1349269903 c:\code\multiregion\include\mrgraph_2d_4c.h
 	<stdint.h>
 	<iostream>
 	<algorithm>
 	<string>
+	<stdexcept>
 

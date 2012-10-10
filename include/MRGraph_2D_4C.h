@@ -9,6 +9,7 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <stdexcept>
 
 
 template
@@ -67,8 +68,6 @@ public:
                          const type_arg_ncap* cap_ge,         // [+1, 0]
                          const type_arg_ncap* cap_el,         // [ 0,-1]
                          const type_arg_ncap* cap_eg);        // [ 0,+1]
-    // Needs a reimplementation for interior caps. Maybe keep this and have
-    // a separate function for interior caps.
 
 
     // After the maxflow is computed, this function returns a bitfield
@@ -333,7 +332,7 @@ set_terminal_cap(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
             active_s.push(v);
             s_dist = 1;
         } else if (cap_s < cap_t) {
-            rc_st[v] = cap_t - cap_t;
+            rc_st[v] = cap_t - cap_s;
             label[v] = LABEL_T;
             parent_edge[v] = DIR_TERMINAL;
             parent_id[v] = PARENT_ID_TERMINAL;
@@ -385,7 +384,8 @@ set_neighbor_cap(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
         dir = 2;
     else if (offset_x ==  0 && offset_y == -1)
         dir = 0;
-    else {//throw exception here
+    else {
+        throw std::range_error("Attempted to access unsupported direction");
     }
     rc_nbhd[v][dir] = cap;
 
@@ -398,8 +398,8 @@ set_interior_cap(const MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
                                                      const ncap_t  cap) {
     uint8_t node_z = get_z(v);
     int target_z = node_z + offset_z;
-    if (target_z < 0 || target_z >= D) {
-        std::cout << "z out of range" << std::endl;
+    if (target_z < 0 || target_z >= D || offset_z == 0) {
+        throw std::range_error("Bad z-offset for interior edge");
     }
     rc_nbhd[v][((offset_z + D) % D) + 3] = cap;
 }
@@ -444,16 +444,10 @@ compute_maxflow() {
 
             while(!orphans_s.is_empty()) {
                 index_t os = orphans_s.pop();
-                /*if(!adopt_s(os)) {
-                    relabel_s(os, s_dist+1);
-                }*/
                 rank_relabel_s(os, s_dist+1);
             }
             while(!orphans_t.is_empty()) {
                 index_t ot = orphans_t.pop();
-                /*if(!adopt_t(ot)) {
-                    relabel_t(ot, t_dist);
-                }*/
                 rank_relabel_t(ot, t_dist);
             }
         }
@@ -498,17 +492,11 @@ compute_maxflow() {
 #endif
             while(!orphans_t.is_empty()) {
                 index_t ot = orphans_t.pop();
-                /*if(!adopt_t(ot)) {
-                    relabel_t(ot, t_dist+1);
-                }*/
                 rank_relabel_t(ot, t_dist+1);
             }
 
             while(!orphans_s.is_empty()) {
                 index_t os = orphans_s.pop();
-                /*if(!adopt_s(os)) {
-                    relabel_s(os, s_dist);
-                }*/
                 rank_relabel_s(os, s_dist);
             }
         }
@@ -568,7 +556,7 @@ min_residual_t(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t t,
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
 augment_s(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t s,
-                                                  const ncap_t  rcmin) {
+                                                   const ncap_t rcmin) {
 
     //traverse the tree to source and alter the residual caps along the way
     while (parent_edge[s] != DIR_TERMINAL) {
@@ -596,7 +584,7 @@ augment_s(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t s,
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
 augment_t(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t t,
-                                                  const ncap_t  rcmin) {
+                                                   const ncap_t rcmin) {
     while (parent_edge[t] != DIR_TERMINAL) {
         rc_nbhd[t][parent_edge[t]] -= rcmin;
         rc_nbhd[parent_id[t]][REVERSE[parent_edge[t]]] += rcmin;
@@ -753,7 +741,7 @@ rank_relabel_t(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t ot,
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::dir_t MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-get_origin(MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v) {
+get_origin(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v) {
     while (parent_edge[v] != DIR_NONE && parent_edge[v] != DIR_TERMINAL) {
         v = parent_id[v];
     }

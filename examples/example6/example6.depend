@@ -1,12 +1,14 @@
 # depslib dependency file v1.0
-1349111561 source:c:\code\multiregion\examples\example6\main.cpp
+1349205832 source:c:\code\multiregion\examples\example6\main.cpp
 	<iostream>
 	<cstdlib>
+	<exception>
 	"..\..\include\MRGraph_2D_4C.h"
 
-1349094693 c:\code\multiregion\include\mrgraph_2d_4c.h
+1349269903 c:\code\multiregion\include\mrgraph_2d_4c.h
 	<stdint.h>
 	<iostream>
 	<algorithm>
 	<string>
+	<stdexcept>
 
