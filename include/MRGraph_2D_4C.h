@@ -125,7 +125,6 @@ private:
         }
     };
 
-
     const index_t ow; //image width
     const index_t oh; //image height
     const index_t W;  //grid width
@@ -398,7 +397,7 @@ set_neighbor_cap(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-set_interior_cap(const MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
+set_interior_cap(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t v,
                                                      const int     offset_z,
                                                      const ncap_t  cap) {
     uint8_t node_z = get_z(v);
