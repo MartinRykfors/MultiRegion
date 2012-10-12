@@ -151,6 +151,7 @@ private:
     const index_t PARENT_ID_NONE;
 
     dir_t* REVERSE;         //would like this to be a const member
+    index_t* neighbors;
 
     Stack orphans_s;
     Stack orphans_t;
@@ -206,7 +207,7 @@ private:
     void rank_relabel_s(const index_t os, const index_t max_dist);
     void rank_relabel_t(const index_t ot, const index_t max_dist);
     dir_t get_origin(index_t v);
-    void get_neighbors(index_t v, index_t nbhrs[]);
+    void get_neighbors(index_t v);
     char get_icon(uint8_t conn);
 };
 
@@ -267,6 +268,8 @@ MRGraph_2D_4C(const int w, const int h, const int depth):
     found_s.buffer = new index_t[N];
     found_t.buffer = new index_t[N];
 
+    neighbors = new index_t[DEGREE];
+
     orphans_s.clear();
     orphans_t.clear();
     active_s.clear();
@@ -296,6 +299,8 @@ MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
     delete[] active_t.buffer;
     delete[] found_s.buffer;
     delete[] found_t.buffer;
+
+    delete[] neighbors;
 }
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
@@ -609,8 +614,7 @@ template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
 rank_relabel_s(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t os,
                const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t max_dist) {
-    index_t neighbors [DEGREE];
-    get_neighbors(os,neighbors);
+    get_neighbors(os);
 
     #ifdef MRGRAPH_VERBOSE
     print_grid("About to process orphan (O) ", "o", os,'O');
@@ -677,8 +681,7 @@ template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
 rank_relabel_t(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t ot,
                const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t max_dist) {
-    index_t neighbors [DEGREE];
-    get_neighbors(ot,neighbors);
+    get_neighbors(ot);
 
     #ifdef MRGRAPH_VERBOSE
     print_grid("About to process orphan (O) ", "o", ot,'O');
@@ -773,8 +776,8 @@ grow_s(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t& vs,
 #endif
             continue;
         }
-        index_t neighbors[DEGREE];
-        get_neighbors(a,neighbors);
+        //index_t neighbors[DEGREE];
+        get_neighbors(a);
         for (dir_t dir = 0; dir < DEGREE; ++dir) {
             //scan all neighbors with residual connection from node a
             if(rc_nbhd[a][dir]) {
@@ -818,8 +821,8 @@ grow_t(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t& vs,
 #endif
             continue;
         }
-        index_t neighbors[DEGREE];
-        get_neighbors(a,neighbors);
+        //index_t neighbors[DEGREE];
+        get_neighbors(a);
         for (dir_t dir = 0; dir < DEGREE; ++dir) {
             if(rc_nbhd[neighbors[dir]][REVERSE[dir]]) {
                 if(label[neighbors[dir]] == LABEL_F) {
@@ -843,14 +846,13 @@ grow_t(typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t& vs,
 
 template <typename tcap_t,typename ncap_t,typename flow_t>
 void MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::
-get_neighbors(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t a,
-                    typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t nbhrs[]) {
-    nbhrs[0] = north(a);
-    nbhrs[1] = east(a);
-    nbhrs[2] = south(a);
-    nbhrs[3] = west(a);
+get_neighbors(const typename MRGraph_2D_4C<tcap_t,ncap_t,flow_t>::index_t a) {
+    neighbors[0] = north(a);
+    neighbors[1] = east(a);
+    neighbors[2] = south(a);
+    neighbors[3] = west(a);
     for(int i = 4; i < DEGREE; ++i) {
-        nbhrs[i] = down(a,i-3);
+        neighbors[i] = down(a,i-3);
     }
 }
 
@@ -1020,8 +1022,12 @@ print_grid(std::string msg, std::string options = "",
             }
 
             uint8_t conn = 0;
-            index_t neighbors[DEGREE];
-            get_neighbors(v,neighbors);
+            index_t nbhrs[4];
+            nbhrs[0] = north(v);
+            nbhrs[1] = east(v);
+            nbhrs[2] = south(v);
+            nbhrs[3] = west(v);
+            //get_neighbors(v,neighbors);
             if (label[v] == LABEL_S) {
                 if (parent_edge[v] == DIR_TERMINAL) {
                     std::cout << 's';
@@ -1029,8 +1035,8 @@ print_grid(std::string msg, std::string options = "",
                 }
                 dir_t par = REVERSE[parent_edge[v]];
                 conn += (1<<par);
-                for (dir_t dir = 0; dir < DEGREE; ++dir) {
-                    if (parent_id[neighbors[dir]] == v) {
+                for (dir_t dir = 0; dir < 4; ++dir) {
+                    if (parent_id[nbhrs[dir]] == v) {
                         conn += (1<<dir);
                     }
                 }
@@ -1041,8 +1047,8 @@ print_grid(std::string msg, std::string options = "",
                 }
                 dir_t par = parent_edge[v];
                 conn += (1<<par);
-                for (dir_t dir = 0; dir < DEGREE; ++dir) {
-                    if (parent_id[neighbors[dir]] == v) {
+                for (dir_t dir = 0; dir < 4; ++dir) {
+                    if (parent_id[nbhrs[dir]] == v) {
                         conn += (1<<dir);
                     }
                 }
@@ -1107,5 +1113,6 @@ get_icon(uint8_t conn) {
 
     return '!';
 }
+
 
 #endif // MRGRAPH_2D_4C_H

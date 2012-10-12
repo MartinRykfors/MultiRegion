@@ -8,9 +8,9 @@ Use std::clock to time how long calculate_maxflow takes.
 #include "..\..\include\MRGraph_2D_4C.h"
 #include "..\..\include\GridGraph_2D_4C.h"
 
-#define NUM_TRIALS 10
+#define NUM_TRIALS 5
 #define WIDTH 1000
-#define HEIGHT 4000
+#define HEIGHT 1000
 #define MAXCAP 4
 
 using namespace std;
@@ -103,7 +103,7 @@ int main() {
     m_avg /= NUM_TRIALS;
     g_avg /= NUM_TRIALS;
 
-    cout << "Average times on " << HEIGHT << " X " << WIDTH << " grid:" << endl <<
+    cout << "Average times on " << HEIGHT << " x " << WIDTH << " grid:" << endl <<
         "Gridcut: " << g_avg << endl <<
         "MRGraph: " << m_avg << endl <<
         "Speedup: " << (g_avg/m_avg) << endl;

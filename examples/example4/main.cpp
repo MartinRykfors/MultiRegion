@@ -21,8 +21,8 @@ Legend:
 
 #include "..\..\include\MRGraph_2D_4C.h"
 
-#define WIDTH 4
-#define HEIGHT 4
+#define WIDTH 7
+#define HEIGHT 7
 #define MAXCAP 10
 
 
@@ -66,19 +66,19 @@ int main()
     }
 
 
-//    for (int y = 0; y < HEIGHT; ++y) {
-//        mgrid.set_terminal_cap(mgrid.node_id(0,y,0), 40, 0);
-//        mgrid.set_terminal_cap(mgrid.node_id(WIDTH-1,y,0), 0, 40);
-//    }
-
-    //set random terminal caps
-    for (int x = 0; x < WIDTH; ++x) {
-        for (int y = 0; y < HEIGHT; ++y) {
-            uint16_t val1 = rand()%MAXCAP;
-            uint16_t val2 = rand()%MAXCAP;
-            mgrid.set_terminal_cap(mgrid.node_id(x,y,0), val1, val2);
-        }
+    for (int y = 0; y < HEIGHT; ++y) {
+        mgrid.set_terminal_cap(mgrid.node_id(0,y,0), 40, 0);
+        mgrid.set_terminal_cap(mgrid.node_id(WIDTH-1,y,0), 0, 40);
     }
+
+//    //set random terminal caps
+//    for (int x = 0; x < WIDTH; ++x) {
+//        for (int y = 0; y < HEIGHT; ++y) {
+//            uint16_t val1 = rand()%MAXCAP;
+//            uint16_t val2 = rand()%MAXCAP;
+//            mgrid.set_terminal_cap(mgrid.node_id(x,y,0), val1, val2);
+//        }
+//    }
 
 
     mgrid.compute_maxflow();

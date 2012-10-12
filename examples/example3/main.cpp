@@ -12,8 +12,8 @@ The GridCut source code can be obtained at gridcut.com
 #include "..\..\include\GridGraph_2D_4C.h"
 
 
-#define WIDTH 4
-#define HEIGHT 4
+#define WIDTH 18
+#define HEIGHT 18
 #define MAXCAP 9
 
 
