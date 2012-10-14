@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
-	<File name="main.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="856" topLine="36" />
+	<File name="main.cpp" open="1" top="1" tabpos="1">
+		<Cursor position="1015" topLine="54" />
 	</File>
-	<File name="..\..\include\MRGraph_2D_4C.h" open="1" top="1" tabpos="2">
-		<Cursor position="5328" topLine="128" />
+	<File name="..\..\include\MRGraph_2D_4C.h" open="1" top="0" tabpos="2">
+		<Cursor position="20016" topLine="644" />
 	</File>
 </CodeBlocks_layout_file>
