@@ -1,0 +1,22 @@
+# depslib dependency file v1.0
+1350410368 source:c:\code\multiregion\examples\example7\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<stdint.h>
+	"../../include/MRGraph_2D_4C.h"
+	"../../include/GridGraph_2D_4C.h"
+
+1350402268 c:\code\multiregion\include\mrgraph_2d_4c.h
+	<stdint.h>
+	<iostream>
+	<algorithm>
+	<string>
+	<stdexcept>
+
+1347969694 c:\code\multiregion\include\gridgraph_2d_4c.h
+	<cstdlib>
+	<cstring>
+	<new>
+	<stdint.h>
+
