@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="main.cpp" open="1" top="0" tabpos="3">
-		<Cursor position="4" topLine="0" />
+	<File name="main.cpp" open="1" top="1" tabpos="0">
+		<Cursor position="665" topLine="0" />
 	</File>
-	<File name="..\..\include\MRGraph_2D_4C.h" open="1" top="0" tabpos="1">
+	<File name="..\..\include\MRGraph_2D_4C.h" open="0" top="0" tabpos="1">
 		<Cursor position="22039" topLine="686" />
 	</File>
 </CodeBlocks_layout_file>
