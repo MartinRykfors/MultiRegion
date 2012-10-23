@@ -9,6 +9,7 @@ Importing a grid graph from a .mrmax file;
 #include <string>
 #include <stdint.h>
 #include "../../include/MRGraph_2D_4C.h"
+#include "../../include/GraphParser.h"
 
 using namespace std;
 

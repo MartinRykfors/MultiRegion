@@ -22,6 +22,7 @@
 		</Compiler>
 		<Unit filename="main.cpp" />
 		<Unit filename="test1.mrmax" />
+		<Unit filename="..\..\include\GraphParser.h" />
 		<Unit filename="..\..\include\GridGraph_2D_4C.h" />
 		<Unit filename="..\..\include\MRGraph_2D_4C.h" />
 		<Extensions>
