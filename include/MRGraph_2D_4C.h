@@ -31,9 +31,17 @@ public:
     MRGraph_2D_4C(int width, int height, int depth);
 
     // Returns the number of layers of the graph
-    int getDepth() const {
+    int get_depth() const {
         return D;
     };
+
+    int get_width() const{
+        return ow;
+    }
+
+    int get_height() const{
+        return oh;
+    }
 
     // Returns the index of the node at point (x,y), label z
     inline index_t node_id(int x,int y,int z) const {
@@ -208,6 +216,11 @@ private:
     dir_t get_origin(index_t v);
     void get_neighbors(index_t v);
     char get_icon(uint8_t conn);
+
+    // hide assigment op, copy ctor, default ctor
+    const MRGraph_2D_4C& operator=(const MRGraph_2D_4C &rhs) {};
+    MRGraph_2D_4C(MRGraph_2D_4C &other) {};
+    MRGraph_2D_4C() {};
 };
 
 
