@@ -9,8 +9,8 @@
 template <typename tcap_t, typename ncap_t, typename flow_t>
 class GraphParser {
     public:
-    GraphParser(std::string filename);
-    void parse_data(MRGraph_2D_4C<tcap_t, ncap_t, flow_t> * mgraph);
+    GraphParser(const char* filename);
+    void parse_data(MRGraph_2D_4C<tcap_t, ncap_t, flow_t> & mgraph);
     int get_width() {
         return width;
     };
@@ -29,7 +29,7 @@ private:
 
 template <typename tcap_t, typename ncap_t, typename flow_t>
 GraphParser<tcap_t, ncap_t, flow_t>::
-GraphParser(std::string filename):
+GraphParser(const char* filename):
     graph_stream(filename) {
     std::string input;
     while(graph_stream.good()) {
@@ -49,7 +49,7 @@ GraphParser(std::string filename):
 
 template <typename tcap_t, typename ncap_t, typename flow_t>
 void GraphParser<tcap_t, ncap_t, flow_t>::
-parse_data(MRGraph_2D_4C<tcap_t, ncap_t, flow_t>* mgrid) {
+parse_data(MRGraph_2D_4C<tcap_t, ncap_t, flow_t>& mgrid) {
     std::string input;
     while(graph_stream.good()) {
         graph_stream >> input;
@@ -57,7 +57,8 @@ parse_data(MRGraph_2D_4C<tcap_t, ncap_t, flow_t>* mgrid) {
             graph_stream.ignore(10000, '\n');
             continue;
         } else if (input == "n") {
-            int x, y, n, w, s, e;
+            int x, y;
+            ncap_t n, w, s, e;
             graph_stream >> x;
             graph_stream >> y;
             graph_stream >> n;
@@ -66,21 +67,22 @@ parse_data(MRGraph_2D_4C<tcap_t, ncap_t, flow_t>* mgrid) {
             graph_stream >> w;
             x=x-1;
             y=y-1;
-            mgrid->set_neighbor_cap(mgrid->node_id(x,y,0), +1, 0, e);
-            mgrid->set_neighbor_cap(mgrid->node_id(x,y,0), 0, +1, s);
-            mgrid->set_neighbor_cap(mgrid->node_id(x,y,0), -1, 0, w);
-            mgrid->set_neighbor_cap(mgrid->node_id(x,y,0), 0, -1, n);
+            mgrid.set_neighbor_cap(mgrid.node_id(x,y,0), +1, 0, e);
+            mgrid.set_neighbor_cap(mgrid.node_id(x,y,0), 0, +1, s);
+            mgrid.set_neighbor_cap(mgrid.node_id(x,y,0), -1, 0, w);
+            mgrid.set_neighbor_cap(mgrid.node_id(x,y,0), 0, -1, n);
             graph_stream.ignore(10000, '\n');
             continue;
         } else if (input == "t") {
-            int x, y, s, t;
+            int x, y;
+            tcap_t s, t;
             graph_stream >> x;
             graph_stream >> y;
             graph_stream >> s;
             graph_stream >> t;
             x=x-1;
             y=y-1;
-            mgrid->set_terminal_cap(mgrid->node_id(x,y,0), s, t);
+            mgrid.set_terminal_cap(mgrid.node_id(x,y,0), s, t);
             graph_stream.ignore(10000, '\n');
             continue;
         }
