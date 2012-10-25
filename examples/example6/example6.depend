@@ -1,14 +1,21 @@
 # depslib dependency file v1.0
-1349205832 source:c:\code\multiregion\examples\example6\main.cpp
+1351171388 source:c:\code\multiregion\examples\example6\main.cpp
 	<iostream>
 	<cstdlib>
 	<exception>
 	"..\..\include\MRGraph_2D_4C.h"
+	"..\..\include\GraphParser.h"
 
-1349269903 c:\code\multiregion\include\mrgraph_2d_4c.h
+1351072000 c:\code\multiregion\include\mrgraph_2d_4c.h
 	<stdint.h>
 	<iostream>
 	<algorithm>
 	<string>
 	<stdexcept>
+
+1351169421 c:\code\multiregion\include\graphparser.h
+	<string>
+	<fstream>
+	<iostream>
+	"MRGraph_2D_4C.h"
 

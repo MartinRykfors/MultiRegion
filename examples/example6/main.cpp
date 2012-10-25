@@ -28,12 +28,19 @@
 #include <cstdlib>
 #include <exception>
 #include "..\..\include\MRGraph_2D_4C.h"
+#include "..\..\include\GraphParser.h"
 
 int main()
 {
 
+
     typedef MRGraph_2D_4C<uint16_t, uint16_t, uint16_t> Grid;
-    Grid grid(1,1,4);
+    typedef GraphParser<uint16_t, uint16_t, uint16_t> Parser;
+
+    Parser parser("complete4.mrmax");
+    Grid grid(parser.get_width(), parser.get_height(), parser.get_layers());
+    parser.parse_data(grid);
+    /*Grid grid(1,1,4);
 
     grid.set_interior_cap(grid.node_id(0,0,0), 1, 0);
     grid.set_interior_cap(grid.node_id(0,0,0), 2, 2);
@@ -53,7 +60,7 @@ int main()
 
     grid.set_terminal_cap(grid.node_id(0,0,0), 8, 0);
     grid.set_terminal_cap(grid.node_id(0,0,3), 0, 8);
-
+*/
     grid.compute_maxflow();
 
     for (int i = 0; i < 4; ++i) {

@@ -20,11 +20,18 @@
 #include <iostream>
 #include <cstdlib>
 #include "..\..\include\MRGraph_2D_4C.h"
+#include "..\..\include\GraphParser.h"
 
 
 int main()
 {
     typedef MRGraph_2D_4C<uint16_t, uint16_t, uint16_t> Grid;
+    typedef GraphParser<uint16_t, uint16_t, uint16_t> Parser;
+
+    Parser parser("2x2x2grid.mrmax");
+    Grid grid(parser.get_width(), parser.get_height(), parser.get_layers());
+    parser.parse_data(grid);
+/*
     Grid grid(2,2,2);
     // W -- E edges
     grid.set_neighbor_cap(grid.node_id(0,0,0),+1, 0, 1);
@@ -68,7 +75,7 @@ int main()
     // Set terminal caps
     grid.set_terminal_cap(grid.node_id(0,0,0), 8, 0);
     grid.set_terminal_cap(grid.node_id(1,1,1), 0, 8);
-
+*/
     grid.compute_maxflow();
 
     char* space = "    ";
