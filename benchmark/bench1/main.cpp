@@ -9,9 +9,9 @@ Use std::clock to time how long calculate_maxflow takes.
 #include "..\..\include\GridGraph_2D_4C.h"
 
 #define NUM_TRIALS 10
-#define WIDTH 2000
-#define HEIGHT 2000
-#define MAXCAP 4
+#define WIDTH 512
+#define HEIGHT 512
+#define MAXCAP 600
 
 using namespace std;
 

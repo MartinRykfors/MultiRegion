@@ -2,9 +2,9 @@
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
 	<File name="main.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="1991" topLine="15" />
+		<Cursor position="316" topLine="0" />
 	</File>
 	<File name="..\..\include\MRGraph_2D_4C.h" open="1" top="0" tabpos="2">
-		<Cursor position="6560" topLine="177" />
+		<Cursor position="21919" topLine="652" />
 	</File>
 </CodeBlocks_layout_file>
