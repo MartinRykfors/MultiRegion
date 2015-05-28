@@ -9,7 +9,7 @@ It implements a slightly modified version of the algorithm by A. Golberg et al. 
 
 Currently there are a variety of small examples showing how the MRGraph class is used.
 
-Example 3 and the benchmark requires the GridCut headers that can be downloaded from [http://www.gridcut.com](www.gridcut.com).
+Example 3 and the benchmark requires the GridCut headers that can be downloaded from [www.gridcut.com](http://www.gridcut.com).
 
 This project was developed before I had a good understanding on how to structure an open-source project. I am currently revisiting it to make it easier to use for everyone. Work in progress is to replace the examples with unit tests, and to provide an easier way of building it.
 
