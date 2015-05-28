@@ -1,4 +1,4 @@
-### MultiRegion
+# MultiRegion
 ## A cache efficient solver for max-flow/min-cut problems on grid graphs.
 
 This was my 2012 master's thesis project. My thesis publication can be read at [https://lup.lub.lu.se/student-papers/search/publication/3233492](https://lup.lub.lu.se/student-papers/search/publication/3233492).
@@ -13,6 +13,6 @@ Example 3 and the benchmark requires the GridCut headers that can be downloaded 
 
 This project was developed before I had a good understanding on how to structure an open-source project. I am currently revisiting it to make it easier to use for everyone. Work in progress is to replace the examples with unit tests, and to provide an easier way of building it.
 
-# License
+## License
 
 MIT
